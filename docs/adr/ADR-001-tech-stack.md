@@ -48,3 +48,9 @@ In Spring Boot 4 / Spring Batch 6, Boot auto-configures `JobRepository`, `JobOpe
 
 **`spring-boot-starter-jdbc` explicitly included**
 Spring Boot 4 unbundled JDBC into its own module and `spring-boot-starter-batch` no longer transitively includes it, so declaring it directly is required for `DataSourceAutoConfiguration` and the `JdbcContainerConnectionDetailsFactory` backing `@ServiceConnection`.
+
+**JVM timezone pinned to UTC (`-Duser.timezone=UTC`) for tests and local run**
+Pinning JVM timezone to UTC in Surefire and `spring-boot-maven-plugin` ensures deterministic timestamp handling across developer machines and prevents PostgreSQL from rejecting legacy regional zone identifiers like `Asia/Calcutta`.
+
+**`org.testcontainers.postgresql.PostgreSQLContainer` from `testcontainers-postgresql` 2.x**
+Using the non-generic container class from `org.testcontainers.postgresql` avoids the deprecation of the legacy 1.x container class while cleanly extending `JdbcDatabaseContainer` for Spring Boot's `@ServiceConnection` support.
