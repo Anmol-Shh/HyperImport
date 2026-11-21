@@ -63,8 +63,8 @@
 
         <!-- Flyway — owns all DDL including Batch metadata tables -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <!-- Flyway PostgreSQL support module (required for Flyway 10+ with Postgres) -->
         <dependency>
