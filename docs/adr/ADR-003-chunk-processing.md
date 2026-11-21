@@ -14,7 +14,7 @@ Chunk-oriented processing divides large CSV datasets into discrete, manageable b
 The chunk size determines the number of items read and written per transaction, balancing database network roundtrips and write throughput against heap footprint.
 
 **Transaction per chunk boundary**
-Each chunk commits in its own database transaction so that in Spring Batch 6.0, `ChunkOrientedStep` executes transactions only for chunks containing items, resulting in exactly ceil(N / chunkSize) commits (e.g. 3 commits for 21 rows at chunk size 10) without an extra trailing empty commit.
+Each chunk commits in its own database transaction so that in Spring Batch 6.0, `ChunkOrientedStep` executes transactions only for chunks containing items, resulting in exactly ceil(N / chunkSize) commits (e.g. 3 commits for 21 rows at chunk size 10).
 
 **`ChunkOrientedStepBuilder` over deprecated `SimpleStepBuilder`**
 `StepBuilder.chunk(int, PlatformTransactionManager)` was marked deprecated for removal in Spring Batch 6.0 in favor of `StepBuilder.chunk(int)` returning `ChunkOrientedStepBuilder` with the transaction manager configured explicitly via `.transactionManager()`.
