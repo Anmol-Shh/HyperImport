@@ -35,13 +35,16 @@ class SchemaMigrationTests {
                 "SELECT version, success FROM flyway_schema_history ORDER BY installed_rank"
         );
 
-        assertThat(rows).hasSize(2);
+        assertThat(rows).hasSize(3);
 
         assertThat(rows.get(0).get("version")).isEqualTo("1");
         assertThat(rows.get(0).get("success")).isEqualTo(true);
 
         assertThat(rows.get(1).get("version")).isEqualTo("2");
         assertThat(rows.get(1).get("success")).isEqualTo(true);
+
+        assertThat(rows.get(2).get("version")).isEqualTo("3");
+        assertThat(rows.get(2).get("success")).isEqualTo(true);
     }
 
     @Test
@@ -112,5 +115,35 @@ class SchemaMigrationTests {
 
         // Timestamp
         assertThat(columnsByName.get("created_at").get("data_type")).isEqualTo("timestamp with time zone");
+    }
+
+    @Test
+    void importRequestTableHasCorrectColumnsAndTypes() {
+        List<Map<String, Object>> columns = jdbcTemplate.queryForList(
+                "SELECT column_name, data_type, is_nullable FROM information_schema.columns " +
+                        "WHERE table_schema = 'public' AND table_name = 'import_request'"
+        );
+
+        assertThat(columns).isNotEmpty();
+
+        Map<String, Map<String, Object>> columnsByName = columns.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        row -> (String) row.get("column_name"),
+                        row -> row
+                ));
+
+        assertThat(columnsByName.get("import_id").get("data_type")).isEqualTo("uuid");
+        assertThat(columnsByName.get("import_id").get("is_nullable")).isEqualTo("NO");
+
+        assertThat(columnsByName.get("original_filename").get("data_type")).isEqualTo("text");
+        assertThat(columnsByName.get("original_filename").get("is_nullable")).isEqualTo("NO");
+
+        assertThat(columnsByName.get("stored_path").get("data_type")).isEqualTo("text");
+        assertThat(columnsByName.get("stored_path").get("is_nullable")).isEqualTo("NO");
+
+        assertThat(columnsByName.get("created_at").get("data_type")).isEqualTo("timestamp with time zone");
+
+        assertThat(columnsByName.get("job_execution_id").get("data_type")).isEqualTo("bigint");
+        assertThat(columnsByName.get("job_execution_id").get("is_nullable")).isEqualTo("YES");
     }
 }
