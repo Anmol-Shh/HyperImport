@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16.16
+    # Same tag pinned in TestcontainersConfig — both must be updated together.
+    environment:
+      POSTGRES_DB: customerimport
+      POSTGRES_USER: customerimport
+      POSTGRES_PASSWORD: customerimport
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

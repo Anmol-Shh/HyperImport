@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.2</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>customer-import</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>customer-import</name>
+    <description>Spring Batch CSV import pipeline — Week 1 skeleton</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <!-- Versions resolved by spring-boot-dependencies BOM (Boot 4.1.2):
+             spring-batch:    6.0.6
+             testcontainers:  2.0.5
+             Record these here so any drift is immediately visible during upgrades. -->
+    </properties>
+
+    <dependencies>
+        <!-- Spring Batch — chunk-oriented CSV import pipeline -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
+        </dependency>
+
+        <!-- Spring JDBC — DataSource auto-configuration, HikariCP, and JdbcTemplate.
+             Required in Spring Boot 4 because spring-boot-starter-batch no longer
+             transitively includes spring-boot-starter-jdbc. Also provides
+             JdbcContainerConnectionDetailsFactory for @ServiceConnection. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!-- Spring Web — REST endpoints (upload, status) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Actuator — /actuator/health and metrics -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL JDBC driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Flyway — owns all DDL including Batch metadata tables -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <!-- Flyway PostgreSQL support module (required for Flyway 10+ with Postgres) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!-- Docker Compose support — starts compose.yaml automatically on spring-boot:run -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- ===== TEST DEPENDENCIES ===== -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- spring-boot-testcontainers — provides @ServiceConnection support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers JUnit 5 integration -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers PostgreSQL module (2.x: separate artifact, package org.testcontainers.postgresql) -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Batch test utilities -->
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Duser.timezone=UTC</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
