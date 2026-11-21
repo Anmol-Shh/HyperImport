@@ -26,6 +26,8 @@ import org.springframework.web.client.RestClient;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,10 +62,22 @@ class ImportEndpointTests {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         restClient = RestClient.builder()
                 .baseUrl("http://localhost:" + port)
                 .build();
+        if (Files.exists(storageDir)) {
+            try (var stream = Files.walk(storageDir)) {
+                stream.sorted(Comparator.reverseOrder())
+                        .filter(p -> !p.equals(storageDir))
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (Exception ignored) {
+                            }
+                        });
+            }
+        }
     }
 
     @Test
@@ -157,7 +171,7 @@ class ImportEndpointTests {
     }
 
     @Test
-    void pathTraversalAttemptStoresFileAtFixedPathSafely() {
+    void pathTraversalAttemptStoresFileAtFixedPathSafely() throws Exception {
         String clientFilename = "../../evil.csv";
         String csvContent = "external_id,full_name,email,country,plan,signup_date\nCUST-999,Evil Tester,evil@test.com,US,FREE,2026-05-01\n";
 
@@ -179,6 +193,12 @@ class ImportEndpointTests {
         // Stored file must exist at {storageDir}/{importId}/upload.csv
         Path expectedStoredFile = storageDir.resolve(importId.toString()).resolve("upload.csv");
         assertThat(Files.exists(expectedStoredFile)).isTrue();
+
+        // Walk entire storage temp directory and assert the only regular file is {importId}/upload.csv
+        try (var stream = Files.walk(storageDir)) {
+            List<Path> regularFiles = stream.filter(Files::isRegularFile).toList();
+            assertThat(regularFiles).containsExactly(expectedStoredFile);
+        }
 
         // No file named evil.csv must exist in or outside storageDir
         Path evilOutside = storageDir.getParent().resolve("evil.csv");
