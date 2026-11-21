@@ -1,0 +1,5 @@
+external_id,full_name,email,country,plan,signup_date
+CUST-001,Alice Smith,alice@example.com,US,PREMIUM,2026-01-15
+CUST-002,"Smith, Bob",bob@example.com,UK,BASIC,2026-02-20
+CUST-003,"Charlie
+Brown",charlie@example.com,CA,ENTERPRISE,2026-03-10
