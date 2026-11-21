@@ -171,4 +171,36 @@ class CustomerImportJobTests {
         long commitCount = stepExecution.getCommitCount();
         log.info("Step commitCount for 21 data rows with chunk-size 10: {}", commitCount);
     }
+
+    @Test
+    void chunkBoundaryWith20DataRowsStagesAllRows(@TempDir Path tempDir) throws Exception {
+        UUID importId = UUID.randomUUID();
+        Path csvFile = tempDir.resolve("customers-20.csv");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("external_id,full_name,email,country,plan,signup_date\n");
+        for (int i = 1; i <= 20; i++) {
+            sb.append(String.format("CUST-%03d,Customer %d,cust%d@example.com,US,BASIC,2026-01-01\n", i, i, i));
+        }
+        Files.writeString(csvFile, sb.toString());
+
+        JobParameters params = new JobParametersBuilder()
+                .addString("import_id", importId.toString(), true)
+                .addString("file.path", csvFile.toAbsolutePath().toString(), false)
+                .toJobParameters();
+
+        JobExecution execution = jobOperator.start(importCustomerJob, params);
+
+        assertThat(execution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+
+        StepExecution stepExecution = execution.getStepExecutions().iterator().next();
+        assertThat(stepExecution.getWriteCount()).isEqualTo(20);
+
+        Integer stagedCount = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM import_staging WHERE import_id = ?",
+                Integer.class,
+                importId
+        );
+        assertThat(stagedCount).isEqualTo(20);
+    }
 }
