@@ -1,4 +1,4 @@
-package com.example.customerimport;
+package io.github.anmol_shh.customerimport;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

@@ -1,4 +1,4 @@
-package com.example.customerimport;
+package io.github.anmol_shh.customerimport;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
