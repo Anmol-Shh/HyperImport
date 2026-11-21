@@ -25,9 +25,12 @@ import java.util.UUID;
  * Controller handling CSV file upload and launching the customer import batch job.
  *
  * <p>IMPORTANT: Do NOT annotate this controller or any method wrapping the job launch with
- * {@code @Transactional}. The Batch job manages its own chunk-oriented database transactions.
- * An outer Spring transaction would bind the thread connection, preventing chunk-level commits
- * and rollbacks from taking effect independently.
+ * {@code @Transactional}. While the {@link JobOperator} proxy includes a {@code TransactionInterceptor},
+ * {@code JobOperator.start} has no transaction attribute and runs without an ambient transaction.
+ * In {@code ChunkOrientedStep}, each chunk executes in its own {@code TransactionTemplate} with
+ * {@code PROPAGATION_REQUIRED}, committing each chunk as an independent physical transaction.
+ * An outer {@code @Transactional} on this controller would bind all chunks to a single outer transaction,
+ * causing earlier chunks to roll back if a later chunk fails.
  */
 @RestController
 public class ImportController {

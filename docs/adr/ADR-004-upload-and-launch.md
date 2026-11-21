@@ -20,7 +20,7 @@ The `import_request` table maintains a durable audit log linking external client
 Launching the job synchronously within the HTTP request simplifies initial integration testing and validation before migrating to asynchronous task execution in Week 2.
 
 **No `@Transactional` annotation around the job launch**
-Omitting `@Transactional` from the controller ensures Spring Batch's step runner maintains independent control over its own chunk-level database transactions and rollbacks.
+Omitting `@Transactional` from the controller ensures Spring Batch's `ChunkOrientedStep` executes each chunk in an independent physical transaction via its internal `TransactionTemplate` (`PROPAGATION_REQUIRED`), allowing completed chunks to remain committed even when subsequent chunks fail.
 
 **HTTP 200 response now, transitioning to HTTP 202 in Week 2**
 Returning HTTP 200 with final execution status and row counts suits synchronous Week 1 execution, and will be replaced by HTTP 202 Accepted once asynchronous execution is introduced.
