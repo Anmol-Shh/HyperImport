@@ -54,3 +54,6 @@ Pinning JVM timezone to UTC in Surefire and `spring-boot-maven-plugin` ensures d
 
 **`org.testcontainers.postgresql.PostgreSQLContainer` from `testcontainers-postgresql` 2.x**
 Using the non-generic container class from `org.testcontainers.postgresql` avoids the deprecation of the legacy 1.x container class while cleanly extending `JdbcDatabaseContainer` for Spring Boot's `@ServiceConnection` support.
+
+**Host port 5433 mapped to container port 5432 in `compose.yaml`**
+Mapping the host port to 5433 avoids port collisions with default local PostgreSQL instances or other developer containers already occupying standard port 5432.
